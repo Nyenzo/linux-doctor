@@ -32,14 +32,14 @@ print_header() {
 
 check_root_warning() {
     if [[ "$EUID" -eq 0 ]]; then
-        summary_add "WARNING" "Execution" "Linux Doctor is running as root, so user-level tools may appear missing"
-
         echo
         echo "Warning: Linux Doctor is running as root"
         echo "Some user-level tools may not appear because root has a different environment"
         echo "Recommended: run ./linux-doctor.sh normally unless you are doing a privileged check"
+
+        summary_add "WARNING" "Execution" "Running as root may hide user-level tools like Node, npm, or VS Code"
     else
-        summary_add "OK" "Execution" "Linux Doctor is running as a normal user"
+        summary_add "OK" "Execution" "Running as normal user"
     fi
 }
 
@@ -64,9 +64,7 @@ run_and_save_report() {
 
     report_file="$(report_create_path)"
 
-    {
-        run_all_checks
-    } > "$report_file"
+    run_all_checks > "$report_file"
 
     summary_print
 
@@ -80,9 +78,7 @@ run_and_show_full_report() {
 
     report_file="$(report_create_path)"
 
-    {
-        run_all_checks
-    } > "$report_file"
+    run_all_checks > "$report_file"
 
     report_view_file "$report_file"
 }

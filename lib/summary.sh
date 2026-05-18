@@ -78,4 +78,3 @@ summary_print() {
     echo "Information"
     summary_print_items_for_status "INFO"
 }
-

@@ -84,8 +84,9 @@ check_docker() {
     engine_output="$(docker --host unix:///var/run/docker.sock info 2>&1)"
     engine_status=$?
 
-    if [[ "$engine_status" -eq 0 ]]; then
+        if [[ "$engine_status" -eq 0 ]]; then
         echo "System Docker Engine is reachable through /var/run/docker.sock"
+        summary_add "OK" "Docker Engine" "System Docker Engine is reachable"
     else
         echo "System Docker Engine is not reachable through /var/run/docker.sock"
         echo
@@ -99,5 +100,23 @@ check_docker() {
         echo "docker context ls"
         echo "docker context use default"
         echo "docker --host unix:///var/run/docker.sock ps"
+
+        summary_add "CRITICAL" "Docker Engine" "System Docker Engine is not reachable"
+    fi
+
+    if [[ "$context_status" -eq 0 ]]; then
+        summary_add "OK" "Docker context" "Current Docker context is reachable"
+    else
+        summary_add "WARNING" "Docker context" "Current Docker context is not reachable"
+    fi
+
+    if [[ "$current_context" != "default" && "$engine_status" -eq 0 ]]; then
+        echo
+        echo "Docker note"
+        echo "System Docker Engine works, but your current Docker context is: $current_context"
+        echo "To use system Docker Engine by default, run:"
+        echo "docker context use default"
+
+        summary_add "INFO" "Docker context" "System Engine works, but current context is $current_context"
     fi
 }
